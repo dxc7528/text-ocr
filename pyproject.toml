@@ -1,0 +1,12 @@
+[project]
+name = "text-ocr"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "docling>=2.81.0",
+    "mlx>=0.31.1",
+    "pillow>=12.1.1",
+    "pillow-heif>=1.3.0",
+]
