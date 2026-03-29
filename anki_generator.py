@@ -225,6 +225,13 @@ def validate_cards(cards: list[AnkiCard]) -> list[AnkiCard]:
             )
             print(f"  🔧 Auto-fixed: moved leaked hint inside cloze '{card.original_concept}'")
 
+        # Check 4: Format LaTeX and Prevent Fragmented Tags (Apply convert_anki_latex logic)
+        try:
+            from convert_anki_latex import process_line as format_latex
+            text = format_latex(text)
+        except ImportError:
+            pass
+
         card.cloze_text = text
         validated.append(card)
 
