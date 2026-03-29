@@ -118,16 +118,27 @@ Please create Anki cloze cards from the following text sections:
 Remember: NO hints (never use ::hint), NO Formula cards, follow anti-hint rules strictly.
 """
 
-    response = client.models.generate_content(
-        model=model,
-        contents=user_prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            response_mime_type="application/json",
-            response_json_schema=LLMCardResponse.model_json_schema(),
-            temperature=0.2,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model=model,
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                response_mime_type="application/json",
+                response_json_schema=LLMCardResponse.model_json_schema(),
+                temperature=0.2,
+            ),
+        )
+    except Exception as e:
+        err_str = str(e)
+        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+            print(f"  ⚠️ API クォータ超過 (429): テキストカードをスキップします。")
+            print(f"     gemini-2.5-pro は無料枠の制限が厳しいため、")
+            print(f"     gemini-2.5-flash の使用を推奨します。")
+            print(f"     Formulaカードのみで出力を続けます。")
+        else:
+            print(f"  ⚠️ LLM API エラー: {e}")
+        return []
 
     # Parse response
     try:
@@ -141,6 +152,6 @@ Remember: NO hints (never use ::hint), NO Formula cards, follow anti-hint rules 
             for card in parsed.cards
         ]
     except Exception as e:
-        print(f"  ⚠️ LLM response parsing failed: {e}")
+        print(f"  ⚠️ LLM レスポンスのパースに失敗しました: {e}")
         print(f"  Raw response: {response.text[:500]}")
         return []
