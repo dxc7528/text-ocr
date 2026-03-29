@@ -1,0 +1,30 @@
+{
+  "skill_name": "markdown-to-anki",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Convert the following concept into Anki cloze cards:\n\n## 熱力学第一法則\n$$Q = \\Delta U + W$$\n\nQ is heat, ΔU is change in internal energy, W is work.",
+      "expected_output": "JSON output with original_concept, processed_cloze_text using {{c1::}} format, and card_type"
+    },
+    {
+      "id": 2,
+      "prompt": "Create an Anki card for: In the Gordon growth model P_0 = D_1 / (k - g), D_1 represents next year's dividend, k is the required return, and g is the dividend growth rate. Generate cards for D_1 and k.",
+      "expected_output": "JSON output for each variable, using {{c1::D_1::meaning}} style hints"
+    },
+    {
+      "id": 3,
+      "prompt": "Convert this sentence to a cloze card: Database preprocessing involves sorting files and setting indices. Use parallel cloze format.",
+      "expected_output": "JSON with card_type=Parallel, using {{c1::...::手法}} and {{c2::...::手法}}"
+    },
+    {
+      "id": 4,
+      "prompt": "Create a causality cloze card: When interest rates rise, bond prices fall.",
+      "expected_output": "JSON with card_type=Causality, cloze hidden the effect (fall)"
+    },
+    {
+      "id": 5,
+      "prompt": "Convert this definition to a card: Atomic number is the number of protons in the nucleus.",
+      "expected_output": "JSON with card_type=Definition, atomic concept cloze"
+    }
+  ]
+}
