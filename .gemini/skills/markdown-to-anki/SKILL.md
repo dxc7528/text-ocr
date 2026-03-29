@@ -25,6 +25,55 @@ The un-cloaked text must provide an unambiguous, singular pathway to the hidden 
 ### 3. Cognitive Load Reduction
 Remove redundant adjectives, conversational fillers, and unnecessary introductory phrases before creating the cloze. Prefer declarative sentences over explanatory ones.
 
+### 4. Formula Integrity — Preserve LaTeX, No Hybrid Mixing
+Formulas MUST remain in their original LaTeX notation (`$...$` or `$$...$$`). Never convert a formula into a prose description. The cloze markers are placed **inside** the LaTeX expression around individual variables or sub-expressions.
+
+Additionally, never produce "hybrid" cards that mix mathematical symbols with natural-language paraphrasing. The formula must be a self-contained, rigorous mathematical expression.
+
+**Correct:**
+`定額配当モデル（ゼロ成長モデル）は $$P_0 = \frac{{{c1::D}}}{{{c2::k}}}$$`
+
+**Wrong (converted to prose):**
+`定額配当モデル（ゼロ成長モデル）では、理論株価 $P_0$ は配当 $D$ を{{c1::割引率 $k$::変数}}で割って算出される。`
+
+**Wrong (hybrid — mixed symbols and text):**
+`CAPMによる要求収益率 $k$ は、リスクフリーレート $R_f$ に{{c1::ベータ値 $\beta$::係数}} × 市場リスクプレミアムを加えたものである。`
+
+### 5. Anti-Hint Principle — Do Not Leak Cloze Answers
+Text surrounding a cloze must never reveal or paraphrase the hidden answer. If an explanatory gloss is necessary, it must be placed **inside** the cloze marker (as part of the answer text), not adjacent to it outside the cloze.
+
+**Correct:**
+`定率成長モデルが成立するための前提条件は、{{c1::$k > g$ （要求収益率 ＞ 成長率）::条件}}である。`
+
+**Wrong (the parenthetical outside the cloze leaks the answer):**
+`定率成長モデルが成立するための前提条件は、{{c1::$k > g$::条件}}（要求収益率 ＞ 成長率）である。`
+
+### 6. Comprehensiveness — No Omissions
+Every testable fact in the source material must produce at least one card. This includes:
+- Core definitions and their meaning
+- Synonyms and alternative names (e.g., DDM = Dividend Discount Model = 配当割引モデル)
+- Frequently tested propositions and conditions
+- **All formulas** appearing under a heading — including sub-formulas, derivations, and special-case variants
+
+Do not extract only formulas while ignoring surrounding textual definitions and key concepts.
+
+**Correct (captures the definition):**
+`株式の理論価格を「{{c1::将来支払われる配当の現在価値の合計}}」として算出する手法を配当割引モデル（DDM）という。`
+
+**Correct (captures a key term):**
+`多段階成長モデルにおいて、安定成長に移行した後の価値を合算したものを{{c1::ターミナルバリュー}}と呼ぶ。`
+
+**Wrong:** Extracting only the formulas and completely omitting textual definitions of DDM, terminal value, and other exam-critical concepts.
+
+### 7. One Card, One Fact — Parallel Elements Get Independent Clozes
+When a card contains multiple parallel components (e.g., the factors of a decomposition), each component MUST receive its own cloze number (`c1`, `c2`, `c3`, ...) so that every element is independently testable.
+
+**Correct:**
+`ROEの分解（デュポン分析）：$ROE$ = {{c1::売上高純利益率}} $\times$ {{c2::総資産回転率}} $\times$ {{c3::財務レバレッジ}}`
+
+**Wrong (only one element is cloze-deleted; the others are never tested):**
+`$ROE$ は、売上高純利益率 × {{c1::総資産回転率::指標}} × 財務レバレッジに分解される。`
+
 ## Processing Pipeline
 
 ### Step 1: Denoise and Condense
@@ -86,16 +135,35 @@ Do NOT cloak qualifying adjectives, conditions, or scope limitations.
 
 #### Card Type: Formula
 
-Use when representing mathematical relationships. Cloze the core variables, leaving mathematical operators visible.
+Use when representing mathematical relationships. The formula MUST be preserved in LaTeX notation. Apply the following sub-rules:
 
-**Example:**
-`$Q = \Delta U + {{c1::W::熱力学量}}$`
+1. **Keep LaTeX format.** Never paraphrase a formula into natural language. Place cloze markers directly inside the LaTeX expression around individual variables or sub-expressions.
+2. **Multi-cloze every variable after the equals sign.** Each independent variable or sub-expression on the right-hand side of the equation gets its own `cX` marker so it is independently testable.
+3. **No hybrid mixing.** The card must be a complete, rigorous mathematical expression — not a mixture of symbols and prose.
+4. **Exhaustive coverage.** Every formula appearing under a heading (including derivations, special cases, and sub-formulas) must produce a Formula card. No formula may be skipped.
+
+**Correct Example (multi-cloze, pure LaTeX):**
+`CAPMによる要求収益率 $k$ の公式：$$k = {{c1::R_f}} + {{c2::\beta_i}} \times ({{c3::E[R_M] - R_f}})$$`
+
+**Correct Example (fraction in LaTeX):**
+`定額配当モデル（ゼロ成長モデル）は $$P_0 = \frac{{{c1::D}}}{{{c2::k}}}$$`
+
+**Wrong Example (only one variable cloze-deleted):**
+`定額配当モデル（ゼロ成長モデル）は $$P_0 = \frac{{{c1::D}}}{k}$$`
+
+**Wrong Example (formula converted to prose):**
+`熱力学第一法則では、熱量は{{c1::内部エネルギーの変化}}に{{c2::仕事}}を加えたものである。`
 
 ### Step 3: Validation
 
 Before finalizing, verify:
 1. The cloaked text is a single word or a tight compound noun (not a phrase longer than 3-4 words). Rewrite if too long.
 2. The user can determine the type of answer required without guessing. Add a `::Hint` if the category is ambiguous.
+3. **Formula integrity:** Every formula card uses LaTeX notation, not prose. No hybrid cards exist.
+4. **Multi-cloze check:** Every independent variable on the RHS of a formula has its own cloze number.
+5. **Anti-hint check:** No text outside a cloze marker reveals or paraphrases the hidden answer.
+6. **Completeness check:** All formulas in the source (including sub-formulas and derivations) have corresponding cards. All core definitions, synonyms, and exam-critical concepts have cards.
+7. **One-fact check:** Parallel elements each have their own cloze number.
 
 ## Output Format
 
@@ -111,24 +179,43 @@ Output strictly in JSON format. Do not include markdown code blocks or conversat
 
 ## Working with LaTeX Formulas
 
-When processing formulas in markdown ($$...$$ or $...$):
+When processing formulas in markdown (`$$...$$` or `$...$`):
 
 1. Extract the formula and its surrounding context (heading, description)
 2. Denoise the surrounding text
-3. Identify key variables that should be tested independently
-4. Apply the appropriate cloze type based on the variable's role
-5. Handling Multiple Variables in One Formula
+3. **Keep the formula in LaTeX format** — do not convert to natural language
+4. Identify every independent variable or sub-expression after the `=` sign
+5. Assign each variable its own cloze number (`c1`, `c2`, `c3`, ...)
+6. Leave mathematical operators (`+`, `-`, `\times`, `\frac{}{}`, `=`) visible as structural scaffolding
+7. Scan for ALL formulas under the heading — including derivations and special-case variants — and produce a card for each one
 
 **Formula card example:**
-- Input: "熱力学第一法則: $Q = \Delta U + W$"
-- Denoised: "Heat equals change in internal energy plus work."
-- Card: `{{c1::Heat}} equals {{c2::change in internal energy}} plus {{c3::work}}.`
+- Input: `熱力学第一法則: $Q = \Delta U + W$`
+- Card:
+```
+熱力学第一法則: $$Q = {{c1::\Delta U}} + {{c2::W}}$$
+```
 - Output JSON:
 ```json
 {
   "original_concept": "First law of thermodynamics",
-  "processed_cloze_text": "{{c1::Heat}} equals {{c2::change in internal energy}} plus {{c3::work}}.",
-  "card_type": "Definition"
+  "processed_cloze_text": "熱力学第一法則: $$Q = {{c1::\\Delta U}} + {{c2::W}}$$",
+  "card_type": "Formula"
+}
+```
+
+**Multi-variable formula example:**
+- Input: `CAPMによる期待収益率: $E[R_i] = R_f + \beta_i (E[R_M] - R_f)$`
+- Card:
+```
+CAPMによる期待収益率の公式：$$E[R_i] = {{c1::R_f}} + {{c2::\beta_i}} \times ({{c3::E[R_M] - R_f}})$$
+```
+- Output JSON:
+```json
+{
+  "original_concept": "CAPM expected return formula",
+  "processed_cloze_text": "CAPMによる期待収益率の公式：$$E[R_i] = {{c1::R_f}} + {{c2::\\beta_i}} \\times ({{c3::E[R_M] - R_f}})$$",
+  "card_type": "Formula"
 }
 ```
 
@@ -164,11 +251,20 @@ python3 scripts/generate_anki_cards.py input.md output_dir/
 }
 ```
 
+**Definition card:**
+```json
+{
+  "original_concept": "Definition of Dividend Discount Model",
+  "processed_cloze_text": "株式の理論価格を「{{c1::将来支払われる配当の現在価値の合計}}」として算出する手法を配当割引モデル（DDM）という。",
+  "card_type": "Definition"
+}
+```
+
 **Formula card:**
 ```json
 {
-  "original_concept": "First law of thermodynamics",
-  "processed_cloze_text": "$Q = \Delta U + {{c1::W::熱力学量}}$",
+  "original_concept": "Zero-growth Dividend Discount Model",
+  "processed_cloze_text": "定額配当モデル（ゼロ成長モデル）は $$P_0 = \\frac{{{c1::D}}}{{{c2::k}}}$$",
   "card_type": "Formula"
 }
 ```
