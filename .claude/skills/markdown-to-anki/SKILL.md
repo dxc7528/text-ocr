@@ -72,10 +72,17 @@ Use when comparing two subjects. Cloze the differentiating trait, keeping both s
 
 #### Card Type: Definition
 
-Use when defining a term. Cloze the term itself or its key distinguishing characteristic.
+Use when defining a term. Cloze the **core concept being defined**, not the qualifying conditions or constraints.
 
-**Example:**
+Cloze the meaning or key characteristic of the term. 
+Do NOT cloak qualifying adjectives, conditions, or scope limitations.
+**Key Principle:** The defined term itself should remain visible as the recall trigger. Cloze its meaning, not the term name or its qualifications.
+
+**Correct Example:**
 `原子番号は原子核内の{{c1::陽子数::特徴}}である。`
+
+**Wrong Example:**
+`BRは{{c1::独立した::鍵}}銘柄選択の回数である。`
 
 #### Card Type: Formula
 
@@ -110,6 +117,7 @@ When processing formulas in markdown ($$...$$ or $...$):
 2. Denoise the surrounding text
 3. Identify key variables that should be tested independently
 4. Apply the appropriate cloze type based on the variable's role
+5. Handling Multiple Variables in One Formula
 
 **Formula card example:**
 - Input: "熱力学第一法則: $Q = \Delta U + W$"
@@ -123,14 +131,6 @@ When processing formulas in markdown ($$...$$ or $...$):
   "card_type": "Definition"
 }
 ```
-
-## Handling Multiple Variables in One Formula
-
-For formulas with multiple key variables, generate one card per variable. Each card should test a single atomic piece of knowledge.
-
-**Example for $P_0 = \frac{D_1}{k - g}$:**
-- Card 1: `"original_concept": "Gordon growth model - dividend", "processed_cloze_text": "In $P_0 = \frac{{{c1::D_1}}}{k - g}$, D_1 represents {{c2::next year dividend::meaning}}", "card_type": "Formula"`
-- Card 2: `"original_concept": "Gordon growth model - required return", "processed_cloze_text": "In $P_0 = \frac{D_1}{{{c1::k}} - g}$, k represents {{c2::required return on equity::meaning}}", "card_type": "Formula"`
 
 ## Bundled Script
 
